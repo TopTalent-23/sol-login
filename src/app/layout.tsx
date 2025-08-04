@@ -3,7 +3,7 @@ import "./globals.css";
 import { ToastContainer } from "@/components/ui/Toast";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-
+import UserHeader from '@/components/UserHeader';
 
 export const metadata: Metadata = {
   title: "Solana Bundler - Bundle Your Transactions Like a Pro",
@@ -45,7 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <header className="p-4 bg-gray-900 text-white flex justify-between items-center">
           <h1 className="text-lg font-bold">Solana Bundler</h1>
-          <div>
+          {/* <div>
             {user ? (
               <div className="flex items-center gap-4">
                 <span className="text-sm">Logged in as <strong>@{user.username}</strong></span>
@@ -54,7 +54,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             ) : (
               <Link href="/auth/telegram" className="text-blue-400 hover:underline">Login with Telegram</Link>
             )}
-          </div>
+          </div> */}
+          <UserHeader />
         </header>
         <main>{children}</main>
         <ToastContainer />
