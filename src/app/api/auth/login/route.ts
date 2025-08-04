@@ -39,6 +39,7 @@ export async function GET(req: NextRequest) {
   try {
     await connectToDatabase();
     let user = await UserModel.findOne({ telegramUserId });
+    let isNewUser = false;
 
     if (!user) {
       const wallet = Keypair.generate();
@@ -52,6 +53,7 @@ export async function GET(req: NextRequest) {
         language,
         createdAt: new Date()
       });
+      isNewUser = true;
     }
 
     const token = await createJwt(user);
@@ -68,13 +70,21 @@ export async function GET(req: NextRequest) {
         const decoded = Buffer.from(redirectEncoded, 'base64').toString('utf-8');
         const parsed = JSON.parse(decoded);
         const redirectTarget = parsed.redirectUrl || '/dashboard';
-        return NextResponse.redirect(new URL(redirectTarget, req.url));
+        // return NextResponse.redirect(new URL(redirectTarget, req.url));
+
+        const html = `<!DOCTYPE html>
+<html><head><script>alert('${isNewUser ? 'User registered' : 'User logged in'}');window.location.href='${redirectTarget}';</script></head><body></body></html>`;
+
+        return new NextResponse(html, {
+          headers: { 'Content-Type': 'text/html' },
+        });
       } catch (err) {
         console.warn('Invalid redirectUrl provided');
       }
     }
 
-    return NextResponse.json({ message: 'Authenticated', user });
+    // return NextResponse.json({ message: 'Authenticated', user });
+    return NextResponse.json({ message: isNewUser ? 'User registered' : 'User logged in', user });
   } catch (error) {
     console.error('[LOGIN_ERROR]', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
