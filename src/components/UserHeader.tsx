@@ -10,19 +10,22 @@ export default function UserHeader() {
   const router = useRouter();
 
   useEffect(() => {
-    fetch('/api/auth/me')
-      .then((res) => res.json())
-      .then((data) => setUser(data.user));
+    const raw = Cookies.get('telegram-auth-storage');
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed?.state?.isAuthenticated) {
+          setUser({ username: parsed?.username ?? 'unknown' }); // You can store & extract more fields
+        }
+      } catch (err) {
+        console.warn('⚠️ Invalid auth cookie:', err);
+      }
+    }
   }, []);
 
   const handleLogout = async () => {
-    // Optional: call your backend logout route if needed
     await fetch('/api/auth/logout');
-
-    // Clear the frontend auth cookie
     Cookies.remove('telegram-auth-storage', { path: '/' });
-
-    // Redirect to login page
     router.replace('/login');
   };
 
@@ -36,7 +39,9 @@ export default function UserHeader() {
           </button>
         </div>
       ) : (
-        <Link href="/auth/telegram" className="text-blue-400 underline">Login with Telegram</Link>
+        <Link href="/auth/telegram" className="text-blue-400 underline">
+          Login with Telegram
+        </Link>
       )}
     </div>
   );
