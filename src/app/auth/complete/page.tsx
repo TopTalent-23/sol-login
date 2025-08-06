@@ -1,35 +1,13 @@
+// src/app/auth/complete/page.tsx
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Cookies from 'js-cookie';
+import { Suspense } from 'react';
+import AuthCompleteClient from './AuthCompleteClient';
 
-export default function AuthComplete() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    const token = searchParams.get('token');
-    if (token) {
-      Cookies.set('telegram-auth-storage', JSON.stringify({
-        state: { isAuthenticated: true },
-        token,
-      }), {
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'Lax',
-        expires: 7,
-      });
-
-      router.replace('/dashboard');
-    } else {
-      router.replace('/login');
-    }
-  }, [searchParams, router]);
-
+export default function AuthCompletePage() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <p>Finalizing login...</p>
-    </div>
+    <Suspense fallback={<div>Finalizing login...</div>}>
+      <AuthCompleteClient />
+    </Suspense>
   );
 }
