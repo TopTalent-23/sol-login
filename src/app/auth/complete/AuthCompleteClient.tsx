@@ -25,7 +25,7 @@ export default function AuthCompleteClient() {
           expires: 7,
         }
       );
-      router.replace('/dashboard');
+      router.replace('/token');
     } else {
       router.replace('/login');
     }

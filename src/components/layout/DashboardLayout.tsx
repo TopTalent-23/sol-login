@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import Logo from '@/components/Logo';
 import { TelegramAuth } from '@/components/auth/TelegramAuth';
+import UserHeader from '../UserHeader';
 
 interface NavItem {
   href: string;
@@ -272,7 +273,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
               <HelpCircle className="w-5 h-5" />
             </button>
             
-            <Suspense fallback={null}><TelegramAuth /></Suspense>
+            {/* <Suspense fallback={null}><TelegramAuth /></Suspense> */}
+            <Suspense fallback={null}><UserHeader /></Suspense>
           </div>
         </header>
 
