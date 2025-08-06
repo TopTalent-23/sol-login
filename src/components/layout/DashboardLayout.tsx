@@ -164,7 +164,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
         <div className="flex flex-1 items-center justify-between">
           <Logo size="md" />
           
-          <Suspense fallback={null}><TelegramAuth /></Suspense>
+          {/* <Suspense fallback={null}><TelegramAuth /></Suspense> */}
+          <Suspense fallback={null}><UserHeader /></Suspense>
         </div>
       </div>
 
