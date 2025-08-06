@@ -13,42 +13,36 @@ const protectedRoutes = [
   '/projects'
 ];
 
-// Routes that should redirect to dashboard if already authenticated
-const authRoutes = ['/login', '/auth'];
+const publicAuthRoutes = ['/login', '/auth/complete'];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  
-  // Check if the route is protected
-  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
-  
-  // Check if it's an auth route
-  const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
-  
-  // Get auth token from cookie
+
+  const isProtected = protectedRoutes.some(route => pathname.startsWith(route));
+  const isPublicAuthRoute = publicAuthRoutes.some(route => pathname.startsWith(route));
+
+  // ✅ Allow all public auth routes immediately
+  if (isPublicAuthRoute) {
+    return NextResponse.next();
+  }
+
   const authCookie = request.cookies.get('telegram-auth-storage');
   let isAuthenticated = false;
-  
+
   if (authCookie) {
     try {
-      const authData = JSON.parse(authCookie.value);
-      isAuthenticated = authData.state?.isAuthenticated === true;
-    } catch (error) {
-      // Invalid cookie data
-      isAuthenticated = false;
+      const parsed = JSON.parse(authCookie.value);
+      isAuthenticated = parsed?.state?.isAuthenticated === true;
+    } catch (err) {
+      console.warn('⚠️ Invalid auth cookie:', err);
     }
   }
-  
-  // Redirect to login if accessing protected route without auth
-  if (isProtectedRoute && !isAuthenticated) {
+
+  // ✅ If visiting a protected route without auth → redirect to login
+  if (isProtected && !isAuthenticated) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
-  
-  // Redirect to dashboard if accessing auth routes while authenticated
-  if (isAuthRoute && isAuthenticated) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
-  }
-  
+
   return NextResponse.next();
 }
 
